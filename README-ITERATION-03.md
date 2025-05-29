@@ -6,11 +6,12 @@
 
 ### Overview
 
-In this module we will integrate with a fictitious external service, "Salesteam," that registers customers and sends the registrations over in bulk.  "Salesteam" provides a JSON document that contains customer information, including their first name, last name, email, employer, and dietary requirements.
+In this module we will integrate with a fictitious external service, "Salesteam," that registers customers and sends the registrations over in bulk. "Salesteam" provides a JSON document that contains customer information, including their first name, last name, email, employer, and dietary requirements.
 
 ```json
 {
-  "customers": [{
+  "customers": [
+    {
       "firstName": "string",
       "lastName": "string",
       "email": "string",
@@ -19,7 +20,8 @@ In this module we will integrate with a fictitious external service, "Salesteam,
         "dietaryRequirements": "VEGETARIAN|GLUTEN_FREE|NONE",
         "size": "XS|S|M|L|XL|XXL"
       }
-    }]
+    }
+  ]
 }
 ```
 
@@ -38,10 +40,12 @@ dddhexagonalworkshop
 │       │   │   └── AttendeeRegisteredEvent.java
 │       │   ├── services
 │       │   │   ├── AttendeeRegistrationResult.java
-│       │   │   └── AttendeeService.java
+│       │   │   ├── AttendeeService.java
 │       │   │   └── RegisterAttendeeCommand.java
 │       │   └── valueobjects
-│       │       └── Address.java
+│       │       ├── Address.java
+│       │       ├── MealPreference.java
+│       │       └── TShirtSize.java
 │       ├── infrastructure
 │       │   ├── AttendeeEndpoint.java
 │       │   ├── AttendeeDTO.java
@@ -59,19 +63,20 @@ dddhexagonalworkshop
 │           └── AttendeeRepository.java
 ```
 
-As you progress through the workshop, you will fill in the missing pieces of code in the appropriate packages.  The workshop authors have stubbed out the classes so that you can focus on the Domain Driven Design concepts as much as possible and Java and framework concepts as little as possilb. 
+As you progress through the workshop, you will fill in the missing pieces of code in the appropriate packages. The workshop authors have stubbed out the classes so that you can focus on the Domain Driven Design concepts as much as possible and Java and framework concepts as little as possilb.
 You can type in the code line by line or copy and paste the code provided into your IDE. You can also combine the approaches as you see fit. The goal is to understand the concepts and how they fit together in a DDD context.
 
 **Quarkus**
 
 Quarkus, https://quarkus.io, is a modern Java framework designed for building cloud-native applications. It provides a set of tools and libraries that make it easy to develop, test, and deploy applications. In this workshop, we will leverage Quarkus to implement our DDD concepts and build a RESTful API for registering attendees.
-The project uses Quarkus, a Java framework that provides built-in support for REST endpoints, JSON serialization, and database access.  Quarkus also features a `Dev Mode` that automatically spins up external dependencies like Kafka and PostgreSQL, allowing you to focus on writing code without worrying about the underlying infrastructure.
+The project uses Quarkus, a Java framework that provides built-in support for REST endpoints, JSON serialization, and database access. Quarkus also features a `Dev Mode` that automatically spins up external dependencies like Kafka and PostgreSQL, allowing you to focus on writing code without worrying about the underlying infrastructure.
 
 **Steps:**
 
-#### 1. Review the Existing Classes 
+#### 1. Review the Existing Classes
 
-The classes implementing the Salesteam JSON document are already stubbed out for you.  You can find them in the `dddhexagonalworkshop.conference.attendees.integration.salesteam` package.  The classes are:
+The classes implementing the Salesteam JSON document are already stubbed out for you. You can find them in the `dddhexagonalworkshop.conference.attendees.integration.salesteam` package. The classes are:
+
 - `Customer.java`: Represents a customer in the Salesteam system.
 - `CustomerDetails.java`: Represents the details of a customer, including dietary requirements and size.
 - `DietaryRequirements.java`: An enum representing the dietary requirements of a customer.
@@ -95,11 +100,11 @@ package dddhexagonalworkshop.conference.attendees.integration.salesteam;
 
 public record CustomerDetails(DietaryRequirements dietaryRequirements, Size size) {
 }
-``` 
+```
 
 ##### `DietaryRequirements.java`
 
-```java 
+```java
 package dddhexagonalworkshop.conference.attendees.integration.salesteam;
 
 public enum DietaryRequirements {
@@ -169,7 +174,7 @@ public class SalesteamToDomainTranslator {
 }
 ```
 
-#### 3. Implement the `SalesteamEndpoint.java`  
+#### 3. Implement the `SalesteamEndpoint.java`
 
 ```java
 package dddhexagonalworkshop.conference.attendees.integration.salesteam;
